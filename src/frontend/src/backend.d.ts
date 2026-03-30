@@ -28,6 +28,7 @@ export interface Module {
 }
 export interface backendInterface {
     addModule(id: bigint, name: string, orderIndex: bigint): Promise<void>;
+    deleteModule(id: bigint): Promise<void>;
     addQuestion(id: bigint, moduleId: bigint, questionText: string, options: Array<string>, correctOptionIndex: bigint, explanation: string, createdAt: bigint): Promise<void>;
     addQuote(id: bigint, text: string, author: string): Promise<void>;
     deleteQuestion(id: bigint): Promise<void>;

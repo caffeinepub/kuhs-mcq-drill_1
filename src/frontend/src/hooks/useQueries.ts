@@ -35,7 +35,8 @@ export function useGetQuestionsByModule(moduleId: bigint | null) {
     queryKey: ["questions", moduleId?.toString()],
     queryFn: async () => {
       if (!actor || moduleId === null) return [];
-      return actor.getQuestionsByModule(moduleId);
+      const qs = await actor.getQuestionsByModule(moduleId);
+      return [...qs].sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
     },
     enabled: !!actor && !isFetching && moduleId !== null,
   });
@@ -52,6 +53,18 @@ export function useAddModule() {
     }: { id: bigint; name: string; orderIndex: bigint }) => {
       if (!actor) throw new Error("No actor");
       return actor.addModule(id, name, orderIndex);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["modules"] }),
+  });
+}
+
+export function useDeleteModule() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id }: { id: bigint }) => {
+      if (!actor) throw new Error("No actor");
+      return actor.deleteModule(id);
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["modules"] }),
   });

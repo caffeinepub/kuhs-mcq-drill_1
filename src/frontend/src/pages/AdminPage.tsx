@@ -6,6 +6,7 @@ import {
   useAddModule,
   useAddQuestion,
   useCheckAdminPassword,
+  useDeleteModule,
   useDeleteQuestion,
   useGetModules,
   useGetQuestionsByModule,
@@ -439,6 +440,8 @@ function ModuleQuestionManager({ module }: { module: Module }) {
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
   const { data: modules, isLoading } = useGetModules();
   const { mutateAsync: addModule, isPending: isAddingModule } = useAddModule();
+  const { mutateAsync: deleteModule, isPending: isDeletingModule } =
+    useDeleteModule();
   const [selectedModuleId, setSelectedModuleId] = useState<bigint | null>(null);
   const [newModuleName, setNewModuleName] = useState("");
   const [showModuleForm, setShowModuleForm] = useState(false);
@@ -458,6 +461,19 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       setShowModuleForm(false);
     } catch {
       toast.error("Failed to add module");
+    }
+  }
+
+  async function handleDeleteModule(e: React.MouseEvent, modId: bigint) {
+    e.stopPropagation();
+    try {
+      await deleteModule({ id: modId });
+      toast.success("Module deleted!");
+      if (selectedModuleId === modId) {
+        setSelectedModuleId(null);
+      }
+    } catch {
+      toast.error("Failed to delete module");
     }
   }
 
@@ -555,24 +571,38 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             ) : modules && modules.length > 0 ? (
               <div className="flex flex-col gap-2">
                 {modules.map((mod, idx) => (
-                  <button
-                    type="button"
+                  <div
                     key={mod.id.toString()}
-                    data-ocid={`admin.modules.item.${idx + 1}`}
-                    onClick={() => setSelectedModuleId(mod.id)}
-                    className={`w-full text-left px-3 py-2 rounded-xl font-black text-sm transition-all ${
-                      activeModule?.id === mod.id
-                        ? "bg-primary text-white shadow-comic-sm"
-                        : "bg-white hover:bg-secondary"
-                    }`}
-                    style={{
-                      borderWidth: "3px",
-                      borderStyle: "solid",
-                      borderColor: "#000",
-                    }}
+                    className="flex items-center gap-1"
                   >
-                    {mod.name}
-                  </button>
+                    <button
+                      type="button"
+                      data-ocid={`admin.modules.item.${idx + 1}`}
+                      onClick={() => setSelectedModuleId(mod.id)}
+                      className={`flex-1 text-left px-3 py-2 rounded-xl font-black text-sm transition-all ${
+                        activeModule?.id === mod.id
+                          ? "bg-primary text-white shadow-comic-sm"
+                          : "bg-white hover:bg-secondary"
+                      }`}
+                      style={{
+                        borderWidth: "3px",
+                        borderStyle: "solid",
+                        borderColor: "#000",
+                      }}
+                    >
+                      {mod.name}
+                    </button>
+                    <button
+                      type="button"
+                      data-ocid={`admin.modules.delete_button.${idx + 1}`}
+                      onClick={(e) => handleDeleteModule(e, mod.id)}
+                      disabled={isDeletingModule}
+                      title="Delete module"
+                      className="flex-shrink-0 bg-red-500 text-white font-black text-xs px-2 py-2 rounded-lg border-2 border-black hover:bg-red-600 transition-all disabled:opacity-50"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 ))}
               </div>
             ) : (

@@ -44,6 +44,7 @@ export const idlService = IDL.Service({
       [],
     ),
   'addQuote' : IDL.Func([IDL.Nat, IDL.Text, IDL.Text], [], []),
+  'deleteModule' : IDL.Func([IDL.Nat], [], []),
   'deleteQuestion' : IDL.Func([IDL.Nat], [], []),
   'getModules' : IDL.Func([], [IDL.Vec(Module)], ['query']),
   'getQuestionsByModule' : IDL.Func([IDL.Nat], [IDL.Vec(Question)], ['query']),
@@ -90,6 +91,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'addQuote' : IDL.Func([IDL.Nat, IDL.Text, IDL.Text], [], []),
+    'deleteModule' : IDL.Func([IDL.Nat], [], []),
     'deleteQuestion' : IDL.Func([IDL.Nat], [], []),
     'getModules' : IDL.Func([], [IDL.Vec(Module)], ['query']),
     'getQuestionsByModule' : IDL.Func(

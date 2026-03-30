@@ -115,6 +115,7 @@ export interface backendInterface {
     getModules(): Promise<Array<Module>>;
     getQuestionsByModule(moduleId: bigint): Promise<Array<Question>>;
     getQuotes(): Promise<Array<Quote>>;
+    deleteModule(id: bigint): Promise<void>;
     deleteQuestion(id: bigint): Promise<void>;
     isAdminPasswordCorrect(password: string): Promise<boolean>;
 }
@@ -215,6 +216,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.isAdminPasswordCorrect(arg0);
+            return result;
+        }
+    }
+    async deleteModule(arg0: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteModule(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteModule(arg0);
             return result;
         }
     }

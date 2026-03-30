@@ -32,6 +32,7 @@ export interface _SERVICE {
     undefined
   >,
   'addQuote' : ActorMethod<[bigint, string, string], undefined>,
+  'deleteModule' : ActorMethod<[bigint], undefined>,
   'deleteQuestion' : ActorMethod<[bigint], undefined>,
   'getModules' : ActorMethod<[], Array<Module>>,
   'getQuestionsByModule' : ActorMethod<[bigint], Array<Question>>,

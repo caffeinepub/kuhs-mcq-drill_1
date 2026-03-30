@@ -45,11 +45,9 @@ actor {
     };
   };
 
-  let modules = Map.fromIter<Nat, Module>([(1, { id = 1; name = "Sample Module"; orderIndex = 1 })].values());
-  let quotes = Map.fromIter<Nat, Quote>([(1, { id = 1; text = "Keep going!"; author = "Anonymous" })].values());
-  let questions = Map.fromIter<Nat, Question>(
-    [(1, { id = 1; moduleId = 1; questionText = "Sample question?"; options = ["A", "B", "C", "D"]; correctOptionIndex = 0; explanation = "Sample explanation"; createdAt = 0 })].values()
-  );
+  let modules = Map.fromIter<Nat, Module>([].values());
+  let quotes = Map.fromIter<Nat, Quote>([].values());
+  let questions = Map.fromIter<Nat, Question>([].values());
 
   public query ({ caller }) func getModules() : async [Module] {
     modules.values().toArray().sort();
@@ -72,6 +70,10 @@ actor {
   public shared ({ caller }) func addModule(id : Nat, name : Text, orderIndex : Nat) : async () {
     let newModule : Module = { id; name; orderIndex };
     modules.add(id, newModule);
+  };
+
+  public shared ({ caller }) func deleteModule(id : Nat) : async () {
+    modules.remove(id);
   };
 
   public shared ({ caller }) func addQuote(id : Nat, text : Text, author : Text) : async () {
