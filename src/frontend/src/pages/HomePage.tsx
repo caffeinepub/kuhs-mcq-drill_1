@@ -54,6 +54,13 @@ const FEATURES = [
   },
 ];
 
+// Launch page color palette
+const HERO_BG = "#d4edda"; // soft light green
+const HERO_TEXT = "#1a3d2b"; // deep green for readability
+const ACCENT_BTN = "#f9e04b"; // warm yellow
+const ACCENT_BTN_HOVER = "#f5d200";
+const DOT_BORDER = "#1a3d2b";
+
 interface HomePageProps {
   onStartDrilling: () => void;
 }
@@ -61,6 +68,7 @@ interface HomePageProps {
 export default function HomePage({ onStartDrilling }: HomePageProps) {
   const { data: backendQuotes } = useGetQuotes();
   const [quoteIndex, setQuoteIndex] = useState(0);
+  const [btnHover, setBtnHover] = useState(false);
 
   const quotes =
     backendQuotes && backendQuotes.length > 0 ? backendQuotes : FALLBACK_QUOTES;
@@ -77,13 +85,23 @@ export default function HomePage({ onStartDrilling }: HomePageProps) {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-primary min-h-[80vh] flex items-center">
+      <section
+        style={{ backgroundColor: HERO_BG }}
+        className="min-h-[80vh] flex items-center"
+      >
         <div className="max-w-6xl mx-auto px-4 py-16 w-full">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             {/* Quote Side */}
-            <div className="text-white">
+            <div style={{ color: HERO_TEXT }}>
               <div className="mb-4">
-                <span className="inline-block bg-white text-primary text-xs font-black uppercase px-3 py-1 rounded-full border-2 border-black shadow-comic-sm">
+                <span
+                  style={{
+                    backgroundColor: ACCENT_BTN,
+                    color: HERO_TEXT,
+                    border: `2px solid ${HERO_TEXT}`,
+                  }}
+                  className="inline-block text-xs font-black uppercase px-3 py-1 rounded-full shadow-comic-sm"
+                >
                   💡 Daily Motivation
                 </span>
               </div>
@@ -95,10 +113,16 @@ export default function HomePage({ onStartDrilling }: HomePageProps) {
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <blockquote className="text-3xl md:text-4xl font-black leading-tight mb-4">
+                  <blockquote
+                    style={{ color: HERO_TEXT }}
+                    className="text-3xl md:text-4xl font-black leading-tight mb-4"
+                  >
                     "{currentQuote.text}"
                   </blockquote>
-                  <p className="text-white/80 text-lg font-bold">
+                  <p
+                    style={{ color: HERO_TEXT, opacity: 0.75 }}
+                    className="text-lg font-bold"
+                  >
                     — {currentQuote.author}
                   </p>
                 </motion.div>
@@ -111,9 +135,12 @@ export default function HomePage({ onStartDrilling }: HomePageProps) {
                     type="button"
                     key={q.id.toString()}
                     onClick={() => setQuoteIndex(i)}
-                    className={`w-3 h-3 rounded-full border-2 border-white transition-all ${
-                      i === quoteIndex ? "bg-white" : "bg-transparent"
-                    }`}
+                    style={{
+                      borderColor: DOT_BORDER,
+                      backgroundColor:
+                        i === quoteIndex ? DOT_BORDER : "transparent",
+                    }}
+                    className="w-3 h-3 rounded-full border-2 transition-all"
                   />
                 ))}
               </div>
@@ -125,7 +152,10 @@ export default function HomePage({ onStartDrilling }: HomePageProps) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <div className="bg-white border-4 border-black rounded-2xl shadow-comic-lg p-8 text-center">
+              <div
+                style={{ border: `4px solid ${HERO_TEXT}` }}
+                className="bg-white rounded-2xl shadow-comic-lg p-8 text-center"
+              >
                 <div className="text-6xl mb-4">🏆</div>
                 <h2 className="text-2xl md:text-3xl font-black text-foreground uppercase leading-tight mb-3">
                   READY TO ACE YOUR EXAMS?
@@ -138,8 +168,16 @@ export default function HomePage({ onStartDrilling }: HomePageProps) {
                   type="button"
                   data-ocid="home.start_drilling.primary_button"
                   onClick={onStartDrilling}
-                  className="w-full bg-primary text-white font-black uppercase text-lg px-8 py-4 rounded-xl border-black shadow-comic hover:translate-y-[-2px] hover:shadow-comic-lg transition-all duration-150 active:translate-y-[2px] active:shadow-none"
-                  style={{ borderWidth: "3px", borderStyle: "solid" }}
+                  onMouseEnter={() => setBtnHover(true)}
+                  onMouseLeave={() => setBtnHover(false)}
+                  style={{
+                    backgroundColor: btnHover ? ACCENT_BTN_HOVER : ACCENT_BTN,
+                    color: HERO_TEXT,
+                    borderWidth: "3px",
+                    borderStyle: "solid",
+                    borderColor: HERO_TEXT,
+                  }}
+                  className="w-full font-black uppercase text-lg px-8 py-4 rounded-xl shadow-comic hover:translate-y-[-2px] hover:shadow-comic-lg transition-all duration-150 active:translate-y-[2px] active:shadow-none"
                 >
                   START DRILLING →
                 </button>

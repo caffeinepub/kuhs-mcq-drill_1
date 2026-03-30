@@ -300,7 +300,10 @@ export default function MCQPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
+    <div
+      className="max-w-4xl mx-auto px-4 py-10"
+      style={{ fontFamily: "'Roboto', sans-serif" }}
+    >
       <div className="mb-8">
         <h1 className="text-3xl font-black uppercase mb-1">
           MCQ <span className="text-primary">DRILL</span>

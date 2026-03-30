@@ -77,11 +77,14 @@ export default function HomePage({ onStartDrilling }: HomePageProps) {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-primary min-h-[80vh] flex items-center">
+      <section
+        className="min-h-[80vh] flex items-center"
+        style={{ backgroundColor: "#FFF8F0" }}
+      >
         <div className="max-w-6xl mx-auto px-4 py-16 w-full">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             {/* Quote Side */}
-            <div className="text-white">
+            <div className="text-foreground">
               <div className="mb-4">
                 <span className="inline-block bg-white text-primary text-xs font-black uppercase px-3 py-1 rounded-full border-2 border-black shadow-comic-sm">
                   💡 Daily Motivation
@@ -98,7 +101,7 @@ export default function HomePage({ onStartDrilling }: HomePageProps) {
                   <blockquote className="text-3xl md:text-4xl font-black leading-tight mb-4">
                     "{currentQuote.text}"
                   </blockquote>
-                  <p className="text-white/80 text-lg font-bold">
+                  <p className="text-muted-foreground text-lg font-bold">
                     — {currentQuote.author}
                   </p>
                 </motion.div>
@@ -111,8 +114,8 @@ export default function HomePage({ onStartDrilling }: HomePageProps) {
                     type="button"
                     key={q.id.toString()}
                     onClick={() => setQuoteIndex(i)}
-                    className={`w-3 h-3 rounded-full border-2 border-white transition-all ${
-                      i === quoteIndex ? "bg-white" : "bg-transparent"
+                    className={`w-3 h-3 rounded-full border-2 border-black transition-all ${
+                      i === quoteIndex ? "bg-primary" : "bg-transparent"
                     }`}
                   />
                 ))}

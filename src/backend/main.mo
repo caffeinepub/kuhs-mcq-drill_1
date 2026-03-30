@@ -1,8 +1,8 @@
 import Map "mo:core/Map";
+import Nat "mo:core/Nat";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
 import Text "mo:core/Text";
-import Iter "mo:core/Iter";
 
 actor {
   type Quote = {
@@ -27,61 +27,53 @@ actor {
     createdAt : Int;
   };
 
-  module Question {
-    public func compare(q1 : Question, q2 : Question) : Order.Order {
-      Nat.compare(q1.id, q2.id);
-    };
+  func compareModules(m1 : Module, m2 : Module) : Order.Order {
+    Nat.compare(m1.orderIndex, m2.orderIndex);
   };
 
-  module Quote {
-    public func compare(quote1 : Quote, quote2 : Quote) : Order.Order {
-      Nat.compare(quote1.id, quote2.id);
-    };
+  func compareQuestions(q1 : Question, q2 : Question) : Order.Order {
+    Nat.compare(q1.id, q2.id);
   };
 
-  module Module {
-    public func compare(module1 : Module, module2 : Module) : Order.Order {
-      Nat.compare(module1.orderIndex, module2.orderIndex);
-    };
+  func compareQuotes(q1 : Quote, q2 : Quote) : Order.Order {
+    Nat.compare(q1.id, q2.id);
   };
 
-  let modules = Map.fromIter<Nat, Module>([].values());
-  let quotes = Map.fromIter<Nat, Quote>([].values());
-  let questions = Map.fromIter<Nat, Question>([].values());
+  let modules = Map.empty<Nat, Module>();
+  let quotes = Map.empty<Nat, Quote>();
+  let questions = Map.empty<Nat, Question>();
 
-  public query ({ caller }) func getModules() : async [Module] {
-    modules.values().toArray().sort();
+  public query func getModules() : async [Module] {
+    modules.values().toArray().sort(compareModules);
   };
 
-  public query ({ caller }) func getQuotes() : async [Quote] {
-    quotes.values().toArray().sort();
+  public query func getQuotes() : async [Quote] {
+    quotes.values().toArray().sort(compareQuotes);
   };
 
-  public query ({ caller }) func getQuestionsByModule(moduleId : Nat) : async [Question] {
-    questions.values().toArray().filter(
-      func(q) { q.moduleId == moduleId }
-    ).sort();
+  public query func getQuestionsByModule(moduleId : Nat) : async [Question] {
+    questions.values().toArray().filter(func(q : Question) : Bool { q.moduleId == moduleId }).sort(compareQuestions);
   };
 
-  public shared ({ caller }) func isAdminPasswordCorrect(password : Text) : async Bool {
+  public shared func isAdminPasswordCorrect(password : Text) : async Bool {
     Text.equal(password, "Tesla786");
   };
 
-  public shared ({ caller }) func addModule(id : Nat, name : Text, orderIndex : Nat) : async () {
+  public shared func addModule(id : Nat, name : Text, orderIndex : Nat) : async () {
     let newModule : Module = { id; name; orderIndex };
     modules.add(id, newModule);
   };
 
-  public shared ({ caller }) func deleteModule(id : Nat) : async () {
+  public shared func deleteModule(id : Nat) : async () {
     modules.remove(id);
   };
 
-  public shared ({ caller }) func addQuote(id : Nat, text : Text, author : Text) : async () {
+  public shared func addQuote(id : Nat, text : Text, author : Text) : async () {
     let newQuote : Quote = { id; text; author };
     quotes.add(id, newQuote);
   };
 
-  public shared ({ caller }) func addQuestion(id : Nat, moduleId : Nat, questionText : Text, options : [Text], correctOptionIndex : Nat, explanation : Text, createdAt : Int) : async () {
+  public shared func addQuestion(id : Nat, moduleId : Nat, questionText : Text, options : [Text], correctOptionIndex : Nat, explanation : Text, createdAt : Int) : async () {
     if (options.size() != 4) {
       Runtime.trap("Exactly 4 options must be provided.");
     };
@@ -89,7 +81,7 @@ actor {
     questions.add(id, newQuestion);
   };
 
-  public shared ({ caller }) func deleteQuestion(id : Nat) : async () {
+  public shared func deleteQuestion(id : Nat) : async () {
     questions.remove(id);
   };
 };
