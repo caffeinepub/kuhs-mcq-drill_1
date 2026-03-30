@@ -88,6 +88,24 @@ export function useAddQuestion() {
   });
 }
 
+export function useDeleteQuestion() {
+  const { actor } = useActor();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      moduleId: _moduleId,
+    }: { id: bigint; moduleId: bigint }) => {
+      if (!actor) throw new Error("No actor");
+      return actor.deleteQuestion(id);
+    },
+    onSuccess: (_, vars) =>
+      qc.invalidateQueries({
+        queryKey: ["questions", vars.moduleId.toString()],
+      }),
+  });
+}
+
 export function useCheckAdminPassword() {
   const { actor } = useActor();
   return useMutation({

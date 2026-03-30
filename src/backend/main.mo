@@ -66,24 +66,16 @@ actor {
   };
 
   public shared ({ caller }) func isAdminPasswordCorrect(password : Text) : async Bool {
-    Text.equal(password, "adminpw");
+    Text.equal(password, "Tesla786");
   };
 
   public shared ({ caller }) func addModule(id : Nat, name : Text, orderIndex : Nat) : async () {
-    let newModule : Module = {
-      id;
-      name;
-      orderIndex;
-    };
+    let newModule : Module = { id; name; orderIndex };
     modules.add(id, newModule);
   };
 
   public shared ({ caller }) func addQuote(id : Nat, text : Text, author : Text) : async () {
-    let newQuote : Quote = {
-      id;
-      text;
-      author;
-    };
+    let newQuote : Quote = { id; text; author };
     quotes.add(id, newQuote);
   };
 
@@ -91,15 +83,11 @@ actor {
     if (options.size() != 4) {
       Runtime.trap("Exactly 4 options must be provided.");
     };
-    let newQuestion : Question = {
-      id;
-      moduleId;
-      questionText;
-      options;
-      correctOptionIndex;
-      explanation;
-      createdAt;
-    };
+    let newQuestion : Question = { id; moduleId; questionText; options; correctOptionIndex; explanation; createdAt };
     questions.add(id, newQuestion);
+  };
+
+  public shared ({ caller }) func deleteQuestion(id : Nat) : async () {
+    questions.remove(id);
   };
 };

@@ -8,17 +8,31 @@ type Page = "home" | "mcq" | "admin";
 
 export default function App() {
   const [page, setPage] = useState<Page>("home");
+  const [logoClicks, setLogoClicks] = useState(0);
+
+  function handleLogoClick() {
+    const next = logoClicks + 1;
+    if (next >= 5) {
+      setLogoClicks(0);
+      setPage("admin");
+    } else {
+      setLogoClicks(next);
+      // Reset after 3 seconds of inactivity
+      setTimeout(() => setLogoClicks(0), 3000);
+    }
+    if (page === "home") setPage("home");
+  }
 
   return (
     <div className="min-h-screen bg-background font-nunito">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white border-b-4 border-black shadow-comic">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo - click 5 times to open admin */}
           <button
             type="button"
             className="flex items-center gap-3 cursor-pointer bg-transparent border-none p-0"
-            onClick={() => setPage("home")}
+            onClick={handleLogoClick}
           >
             <div className="w-10 h-10 bg-primary rounded-xl border-2 border-black flex items-center justify-center shadow-comic-sm">
               <span className="text-white text-lg font-black">K</span>
@@ -59,18 +73,6 @@ export default function App() {
             >
               MCQ Drill
             </button>
-            <button
-              type="button"
-              data-ocid="nav.admin.link"
-              onClick={() => setPage("admin")}
-              className={`px-4 py-2 rounded-xl border-2 border-black font-black text-sm uppercase transition-all ${
-                page === "admin"
-                  ? "bg-primary text-white shadow-comic-sm"
-                  : "bg-white text-foreground hover:bg-secondary"
-              }`}
-            >
-              Admin
-            </button>
           </nav>
         </div>
       </header>
@@ -79,7 +81,7 @@ export default function App() {
       <main>
         {page === "home" && <HomePage onStartDrilling={() => setPage("mcq")} />}
         {page === "mcq" && <MCQPage />}
-        {page === "admin" && <AdminPage />}
+        {page === "admin" && <AdminPage onExit={() => setPage("home")} />}
       </main>
 
       {/* Footer */}

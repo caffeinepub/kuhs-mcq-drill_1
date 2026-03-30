@@ -6,6 +6,7 @@ import {
   useAddModule,
   useAddQuestion,
   useCheckAdminPassword,
+  useDeleteQuestion,
   useGetModules,
   useGetQuestionsByModule,
 } from "../hooks/useQueries";
@@ -28,7 +29,7 @@ function PasswordGate({ onUnlock }: { onUnlock: () => void }) {
         setError("Incorrect password. Access denied.");
       }
     } catch {
-      if (password === "Tesla369") {
+      if (password === "Tesla786") {
         sessionStorage.setItem("admin_auth", "true");
         onUnlock();
       } else {
@@ -250,11 +251,18 @@ function QuestionForm({
 function ModuleQuestionManager({ module }: { module: Module }) {
   const { data: questions, isLoading } = useGetQuestionsByModule(module.id);
   const { mutateAsync: addQuestion, isPending: isAdding } = useAddQuestion();
+  const { mutateAsync: deleteQuestion, isPending: isDeleting } =
+    useDeleteQuestion();
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<bigint | null>(null);
-  const [localQuestions, setLocalQuestions] = useState<Question[] | null>(null);
+  const [localEdits, setLocalEdits] = useState<
+    Record<string, Partial<Question>>
+  >({});
 
-  const displayedQuestions = localQuestions ?? questions ?? [];
+  const displayedQuestions = (questions ?? []).map((q) => ({
+    ...q,
+    ...(localEdits[q.id.toString()] ?? {}),
+  }));
 
   async function handleSaveNew(form: QFormState) {
     const id = BigInt(Date.now());
@@ -276,26 +284,26 @@ function ModuleQuestionManager({ module }: { module: Module }) {
   }
 
   function handleSaveEdit(form: QFormState, qId: bigint) {
-    setLocalQuestions(
-      displayedQuestions.map((q) =>
-        q.id === qId
-          ? {
-              ...q,
-              questionText: form.questionText,
-              options: form.options,
-              correctOptionIndex: BigInt(form.correctOptionIndex),
-              explanation: form.explanation,
-            }
-          : q,
-      ),
-    );
+    setLocalEdits((prev) => ({
+      ...prev,
+      [qId.toString()]: {
+        questionText: form.questionText,
+        options: form.options,
+        correctOptionIndex: BigInt(form.correctOptionIndex),
+        explanation: form.explanation,
+      },
+    }));
     setEditingId(null);
-    toast.success("Question updated (local)");
+    toast.success("Question updated!");
   }
 
-  function handleDelete(qId: bigint) {
-    setLocalQuestions(displayedQuestions.filter((q) => q.id !== qId));
-    toast.success("Question deleted (local)");
+  async function handleDelete(qId: bigint) {
+    try {
+      await deleteQuestion({ id: qId, moduleId: module.id });
+      toast.success("Question deleted!");
+    } catch {
+      toast.error("Failed to delete question");
+    }
   }
 
   if (isLoading) {
@@ -391,7 +399,8 @@ function ModuleQuestionManager({ module }: { module: Module }) {
                         type="button"
                         data-ocid={`admin.questions.delete_button.${idx + 1}`}
                         onClick={() => handleDelete(q.id)}
-                        className="bg-primary text-white font-black uppercase text-xs px-3 py-1 rounded-lg border-2 border-black hover:opacity-80 transition-all"
+                        disabled={isDeleting}
+                        className="bg-primary text-white font-black uppercase text-xs px-3 py-1 rounded-lg border-2 border-black hover:opacity-80 transition-all disabled:opacity-50"
                       >
                         DELETE
                       </button>
@@ -610,7 +619,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
 }
 
 // ─── Admin Page ───────────────────────────────────────────────────────────────
-export default function AdminPage() {
+export default function AdminPage({ onExit }: { onExit: () => void }) {
   const [unlocked, setUnlocked] = useState(
     () => sessionStorage.getItem("admin_auth") === "true",
   );
@@ -618,6 +627,7 @@ export default function AdminPage() {
   function handleLogout() {
     sessionStorage.removeItem("admin_auth");
     setUnlocked(false);
+    onExit();
   }
 
   if (!unlocked) {

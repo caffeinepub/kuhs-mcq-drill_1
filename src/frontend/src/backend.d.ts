@@ -30,6 +30,7 @@ export interface backendInterface {
     addModule(id: bigint, name: string, orderIndex: bigint): Promise<void>;
     addQuestion(id: bigint, moduleId: bigint, questionText: string, options: Array<string>, correctOptionIndex: bigint, explanation: string, createdAt: bigint): Promise<void>;
     addQuote(id: bigint, text: string, author: string): Promise<void>;
+    deleteQuestion(id: bigint): Promise<void>;
     getModules(): Promise<Array<Module>>;
     getQuestionsByModule(moduleId: bigint): Promise<Array<Question>>;
     getQuotes(): Promise<Array<Quote>>;
